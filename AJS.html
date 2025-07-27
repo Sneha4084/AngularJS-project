@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="movieExplorerApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Explorer</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+  <body style="background-color:#1cb5c9;">
+<a href="https://movietittle1234567.blogspot.com/2024/02/movietittle.html">Project Team </a>
+
+<div ng-controller="MovieController">
+  <h1>Movie Explorer</h1>
+  
+  <input type="text" ng-model="search" placeholder="Search">
+  
+  <label>Filter by Genre:
+    <select ng-model="selectedGenre">
+      <option value="">All</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Action">Action</option>
+      <option value="Drama">Drama</option>
+    </select>
+  </label>
+
+  <label>Sort by:
+    <select ng-model="sortBy">
+      <option value="title">Title</option>
+      <option value="rating">Rating</option>
+    </select>
+  </label>
+
+  <ul>
+    <li ng-repeat="movie in filteredMovies | orderBy:sortBy">
+      <a href="#/movie/{{ movie.id }}">
+        <img ng-src="{{ 'images/' + movie.image }}" alt="{{ movie.title }}">
+        <iframe width="560" height="315" ng-src="{{ getYoutubeVideoUrl(movie.trailer) }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        {{ movie.title }} ({{ movie.rating }})
+      </a>
+    </li>
+  </ul>
+</div>
+
+<script>
+  var app = angular.module('movieExplorerApp', []);
+
+  app.controller('MovieController', function($scope, $sce) {
+    $scope.movies = [
+      { id: 1, title: 'Bhootnath', genre: 'Action', rating: 8, image: '1.jpg', trailer: 'Mprw6reBVlc' },
+      { id: 2, title: 'hera pheri', genre: 'Comedy', rating: 8.5, image: '2.jpg', trailer: 'Tp0sSgsEjSc' },
+      { id: 3, title: 'bhootnath', genre: 'Drama', rating: 8.3, image: '3.jpg', trailer: 'y7jjx3pTyLI' },
+      { id: 4, title: 'KGF', genre: 'Action', rating: 9.6, image: '4.jpg', trailer: 'gKizDojsdvs' },
+    ];
+
+    $scope.search = '';
+    $scope.selectedGenre = '';
+    $scope.sortBy = 'title';
+
+    $scope.filterMovies = function(movie) {
+      return (
+        (movie.title.toLowerCase().includes($scope.search.toLowerCase()) ||
+        movie.genre.toLowerCase().includes($scope.search.toLowerCase())) &&
+        ($scope.selectedGenre === '' || movie.genre === $scope.selectedGenre)
+      );
+    };
+
+    $scope.$watchGroup(['search', 'selectedGenre'], function() {
+      $scope.filteredMovies = $scope.movies.filter($scope.filterMovies);
+    });
+
+    $scope.getYoutubeVideoUrl = function(videoId) {
+        return $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + videoId);
+    };
+  });
+</script>
+
+</body>
+</html>
